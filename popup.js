@@ -1,51 +1,59 @@
-if (location.pathname === "/watch") {
-  const urlParams = getAllUrlParams(location.search);
+function pressed() {
+  console.log(document.getElementById("submit").value);
   if (
-    !(
-      (urlParams.hasOwnProperty("t") && urlParams.t > 0) ||
-      urlParams.hasOwnProperty("skiploaded")
-    )
+    (document.getElementById("submit").value === "Submit!" &&
+      document.getElementById("tssec").value > 0) ||
+    document.getElementById("tsmin").value > 0
   ) {
-    console.log(urlParams.v);
-    fetch(
-      `https://${window.firebaseio}.firebaseio.com/videos/${urlParams.v}.json`
-    )
+    console.log("hi!");
+    document.getElementById("submit").value === "Submitting...";
+    const time = Number(
+      document.getElementById("tsmin").value * 60 +
+        document.getElementById("tssec").value
+    );
+    overwriteMain(id, time);
+    return false;
+  }
+
+  function overwriteMain(id, time) {
+    fetch(`https://${window.firebaseio}.firebaseio.com/videos/${id}.json`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        t: time,
+      }),
+    })
       .then((response) => response.json())
-      .then((data) => {
-        if (data && data.hasOwnProperty("t") && data.t > 10) {
-          insertParam("t", data.t);
-          window.pushed = true;
-        }
-        console.log(data);
-      });
+      .then((json) => console.log(json));
   }
 }
 
-function insertParam(key, value) {
-  key = encodeURI(key);
-  value = encodeURI(value);
+let id;
 
-  var kvp = location.search.substr(1).split("&");
+function init() {
+  console.log(window.location.href);
+  chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+    let url = tabs[0];
+    const v = getAllUrlParams("?" + url.url.split("?")[1]).v;
+    id = v;
+    document.getElementById("vidid").innerHTML = `Vid ID: ${v}`;
+  });
+  clicker = document.getElementById("submit");
 
-  var i = kvp.length;
-  var x;
-  while (i--) {
-    x = kvp[i].split("=");
-
-    if (x[0] == key) {
-      x[1] = value;
-      kvp[i] = x.join("=");
-      break;
-    }
-  }
-
-  if (i < 0) {
-    kvp[kvp.length] = [key, value].join("=");
-  }
-
-  //this will reload the page, it's likely better to store this until finished
-  location.search = kvp.join("&");
+  clicker.addEventListener(
+    "click",
+    function (e) {
+      e.preventDefault(); // Cancel the native event
+      e.stopPropagation(); // Don't bubble/capture the event
+      pressed();
+    },
+    false
+  );
+  // dialog.addEventListener("click", showDialog, false);
 }
+document.addEventListener("DOMContentLoaded", init);
 
 function getAllUrlParams(queryString) {
   queryString = queryString.slice(1);
