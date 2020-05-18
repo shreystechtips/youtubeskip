@@ -5,12 +5,10 @@ function pressed() {
       document.getElementById("tssec").value > 0) ||
     document.getElementById("tsmin").value > 0
   ) {
-    console.log("hi!");
     document.getElementById("submit").value === "Submitting...";
-    const time = Number(
-      document.getElementById("tsmin").value * 60 +
-        document.getElementById("tssec").value
-    );
+    const time =
+      Number(document.getElementById("tsmin").value * 60) +
+      Number(document.getElementById("tssec").value);
     overwriteMain(id, time);
     return false;
   }

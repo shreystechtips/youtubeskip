@@ -3,7 +3,7 @@
 
   "name": "YoutubeSkip",
   "description": "This extension skips to the main portion of the video from a large database of collected videos",
-  "version": "0.1",
+  "version": "0.2",
 
   "browser_action": {
     "default_icon": "icon.png",
