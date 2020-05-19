@@ -12,7 +12,7 @@ if (location.pathname === "/watch") {
     )
       .then((response) => response.json())
       .then((data) => {
-        if (data && data.hasOwnProperty("t") && data.t > 10) {
+        if (data && data.hasOwnProperty("t") && data.t > 0) {
           insertParam("t", data.t);
           window.pushed = true;
         }
